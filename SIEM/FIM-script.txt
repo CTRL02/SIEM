@@ -1,0 +1,81 @@
+Write-Host ""
+Write-Host "Choose A) for FIM or B) for new baseline hash capture"
+$output = Read-Host
+if($output -eq "B".ToUpper())
+{
+    # Specify the path to the folder you want to hash
+$folderPath = "C:\ProgramData\FMItest"
+
+# Specify the path to the output text file
+$outputFile = "C:\ProgramData\Hashes.txt"
+
+# Initialize an empty array to store hash results
+$hashes = @()
+
+# Check if the folder exists
+if (Test-Path -Path $folderPath -PathType Container) {
+    # Get a list of all files in the folder
+    $files = Get-ChildItem -Path $folderPath -File
+
+    foreach ($file in $files) {
+        # Calculate the SHA-256 hash of each file
+        $hash = Get-FileHash -Path $file.FullName -Algorithm SHA256
+
+        # Add the hash result to the array
+        $hashes += "File: $($file.Name), SHA-256 Hash: $($hash.Hash)"
+    }
+
+    # Save the hash results to the output file
+    $hashes | Out-File -FilePath $outputFile
+
+    Write-Host "Hashes have been calculated and saved to $outputFile." -ForegroundColor DarkGreen
+} else {
+    Write-Host "The folder $folderPath does not exist."
+}
+} elseif($output -eq "A".ToUpper())
+{
+  # Specify the path to the folder you want to monitor
+$folderPath = "C:\ProgramData\FMItest"
+
+# Specify the path to the output text file
+$outputFile = "C:\ProgramData\Changes.txt"
+
+# Create a FileSystemWatcher
+$watcher = New-Object System.IO.FileSystemWatcher
+$watcher.Path = $folderPath
+$watcher.IncludeSubdirectories = $true
+$watcher.EnableRaisingEvents = $true
+
+# Define the action to take when a change is detected
+$onChangeAction = {
+    $changeType = $event.SourceEventArgs.ChangeType
+    $file = $event.SourceEventArgs.FullPath
+    $changeInfo = "Change detected: $changeType - $file"
+    $changeInfo | Out-File -Append -FilePath $outputFile
+    Write-Host $changeInfo
+}
+
+# Register the event handler
+Register-ObjectEvent -InputObject $watcher -EventName "Created" -Action $onChangeAction
+Register-ObjectEvent -InputObject $watcher -EventName "Changed" -Action $onChangeAction
+Register-ObjectEvent -InputObject $watcher -EventName "Deleted" -Action $onChangeAction
+Register-ObjectEvent -InputObject $watcher -EventName "Renamed" -Action $onChangeAction
+
+Write-Host "Monitoring folder $folderPath for changes..."
+Write-Host "Press Ctrl+C to stop monitoring."
+
+# Keep the script running
+try {
+    while ($true) {
+        Wait-Event -Timeout 3600
+    }
+} catch {
+    Unregister-Event -SourceIdentifier $watcher.Created
+    Unregister-Event -SourceIdentifier $watcher.Changed
+    Unregister-Event -SourceIdentifier $watcher.Deleted
+    Unregister-Event -SourceIdentifier $watcher.Renamed
+    $watcher.Dispose()
+}
+
+
+} 

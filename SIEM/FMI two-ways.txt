@@ -1,0 +1,4 @@
+either a file for the baseline hash and a loop that calculate hashes and infinitely comparing it to the baseline hashes
+
+
+Or simply use the filewatcher in powershell.
