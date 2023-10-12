@@ -31,6 +31,8 @@ To get started with the SIEM project, follow these steps:
 
 ## Map screenshots with live attacks.
    ![Powershell running while map recieve the location through the API](SIEM/ScriptPocwithDifLocations.png)
+   ![Map](SIEM/failedLoginPoc.png)
 
-
-
+## FIM through change history and alert.
+   ![FIM](SIEM/ChangeHistory+alert.png)
+   ![FIM](SIEM/FMIpoc.png)
