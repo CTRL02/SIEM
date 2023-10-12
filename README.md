@@ -6,10 +6,6 @@ Welcome to the Security Information and Event Management (SIEM) project built on
 - [Project Overview](#project-overview)
 - [Features](#features)
 - [Getting Started](#getting-started)
-- [Usage](#usage)
-- [File Integrity Monitoring (FIM)](#file-integrity-monitoring-fim)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Project Overview
 
